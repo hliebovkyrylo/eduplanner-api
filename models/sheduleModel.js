@@ -77,6 +77,11 @@ const scheduleSchema = new mongoose.Schema({
             default: undefined
         },
     },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    }
 });
 
 export default mongoose.model('Shedule', scheduleSchema);

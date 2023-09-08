@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 
 import { userController, scheduleController } from "./controllers/index.js";
 import { authValidator, createScheduleValidator } from "./validations.js";
-import { checkAuth, validationErrors } from "./utils/index.js";
+import { checkAuth, validationErrors, checkOwner } from "./utils/index.js";
 
 const app = express();
 app.use(express.json());
@@ -19,7 +19,8 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {console.log('DB connected'
 app.post('/auth/register', authValidator, validationErrors, userController.register);
 app.post('/auth/login', authValidator, validationErrors, userController.login);
 
-app.post('/create', checkAuth, createScheduleValidator, validationErrors, scheduleController.createSchedule);
+app.post('/schedule/create', checkAuth, createScheduleValidator, validationErrors, scheduleController.createSchedule);
+app.post('/schedule/update/:id', checkAuth, checkOwner, createScheduleValidator, validationErrors, scheduleController.updateSchedule);
 
 app.listen(4000, (err) => {
     if (err) {
