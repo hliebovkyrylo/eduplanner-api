@@ -3,7 +3,9 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
-import { userController } from "./controllers/index.js";
+import { userController, scheduleController } from "./controllers/index.js";
+import { authValidator, createScheduleValidator } from "./validations.js";
+import { checkAuth, validationErrors } from "./utils/index.js";
 
 const app = express();
 app.use(express.json());
@@ -14,8 +16,10 @@ dotenv.config();
 mongoose.connect(process.env.MONGODB_URI).then(() => {console.log('DB connected');}).catch((error) => {console.log('DB error!', error);});
 
 // login, register
-app.post('/auth/register', userController.register);
-app.post('/auth/login', userController.login);
+app.post('/auth/register', authValidator, validationErrors, userController.register);
+app.post('/auth/login', authValidator, validationErrors, userController.login);
+
+app.post('/create', checkAuth, createScheduleValidator, validationErrors, scheduleController.createSchedule);
 
 app.listen(4000, (err) => {
     if (err) {
