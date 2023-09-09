@@ -19,8 +19,10 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {console.log('DB connected'
 app.post('/auth/register', authValidator, validationErrors, userController.register);
 app.post('/auth/login', authValidator, validationErrors, userController.login);
 
+// create, update and delete schedules
 app.post('/schedule/create', checkAuth, createScheduleValidator, validationErrors, scheduleController.createSchedule);
-app.post('/schedule/update/:id', checkAuth, checkOwner, createScheduleValidator, validationErrors, scheduleController.updateSchedule);
+app.patch('/schedule/update/:id', checkAuth, checkOwner, createScheduleValidator, validationErrors, scheduleController.updateSchedule);
+app.delete('/schedule/delete/:id', checkAuth, checkOwner, scheduleController.deleteSchedule);
 
 app.listen(4000, (err) => {
     if (err) {

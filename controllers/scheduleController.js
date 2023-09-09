@@ -45,3 +45,31 @@ export const updateSchedule = async (req, res) => {
         });
     }
 };
+
+export const deleteSchedule = async (req, res) => {
+    try {
+        const scheduleId = req.params.id;
+
+        await scheduleModel.findByIdAndDelete(
+            {
+                _id: scheduleId
+            },
+        ).then((schedule) => {
+            if (!schedule) {
+                return res.status(404).json({
+                    message: "Schedule is not found!"
+                });
+            }
+        })
+
+        res.json({
+            message: "Schedule has been deleted!"
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: "Failed to delete schedule!"
+        });
+    }
+};
