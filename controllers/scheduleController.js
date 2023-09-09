@@ -73,3 +73,43 @@ export const deleteSchedule = async (req, res) => {
         });
     }
 };
+
+export const getAllSchedules = async (req, res) => {
+    try {
+        const schedules = await scheduleModel.find().exec();
+
+        res.json(schedules)
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: "Failed to get schedules!"
+        })
+    }
+};
+
+export const getOneSchedule = async (req, res) => {
+    try {
+        const schedules = req.params.id;
+
+        await scheduleModel.findOne(
+            {
+                _id: schedules
+            }
+        ).then((schedule) => {
+            if (!schedule) {
+                res.status(404).json({
+                    message: "Schedule is not found!"
+                });
+            }
+
+            res.json(schedule);
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: "Failed to get schedule!"
+        });
+    }
+};

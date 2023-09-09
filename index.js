@@ -24,6 +24,10 @@ app.post('/schedule/create', checkAuth, createScheduleValidator, validationError
 app.patch('/schedule/update/:id', checkAuth, checkOwner, createScheduleValidator, validationErrors, scheduleController.updateSchedule);
 app.delete('/schedule/delete/:id', checkAuth, checkOwner, scheduleController.deleteSchedule);
 
+// receiving schedules
+app.get('/schedules/all', scheduleController.getAllSchedules);
+app.get('/schedule/:id', scheduleController.getOneSchedule);
+
 app.listen(4000, (err) => {
     if (err) {
         console.log('Server is not working!');
