@@ -18,6 +18,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => {console.log('DB connected'
 // login, register
 app.post('/auth/register', authValidator, validationErrors, userController.register);
 app.post('/auth/login', authValidator, validationErrors, userController.login);
+app.get('/auth/me', checkAuth, userController.getMe);
 
 // create, update and delete schedules
 app.post('/schedule/create', checkAuth, createScheduleValidator, validationErrors, scheduleController.createSchedule);
