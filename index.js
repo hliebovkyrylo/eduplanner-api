@@ -9,10 +9,7 @@ import { checkAuth, validationErrors, checkOwner } from "./utils/index.js";
 
 const app = express();
 app.use(express.json());
-app.use(cors({
-    origin: 'https://schedule-frontend-xi.vercel.app/',
-}));
-  
+app.use(cors());
 
 dotenv.config();
 
