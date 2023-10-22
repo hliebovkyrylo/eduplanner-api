@@ -3,6 +3,9 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
+import { auth } from "express-openid-connect";
+import authConfig from "./configs/authConfig.js";
+
 import { userController, scheduleController } from "./controllers/index.js";
 import { authValidator, createScheduleValidator } from "./validations.js";
 import { checkAuth, validationErrors, checkOwner } from "./utils/index.js";
@@ -10,14 +13,13 @@ import { checkAuth, validationErrors, checkOwner } from "./utils/index.js";
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(auth(authConfig));
 
 dotenv.config();
 
 mongoose.connect(process.env.MONGODB_URI).then(() => {console.log('DB connected');}).catch((error) => {console.log('DB error!', error);});
 
-// login, register
-app.post('/auth/register', authValidator, validationErrors, userController.register);
-app.post('/auth/login', authValidator, validationErrors, userController.login);
+// get user info
 app.get('/auth/me', checkAuth, userController.getMe);
 
 // create, update and delete schedules
