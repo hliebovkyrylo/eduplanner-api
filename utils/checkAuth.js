@@ -1,25 +1,22 @@
-import jwt from "jsonwebtoken";
+import jwt from "express-jwt";
 
 export default (req, res, next) => {
-    const token = (req.headers.authorization || '').replace(/Bearer\s?/, '');
+  const checkJwt = jwt({
+    secret: jwksRsa.expressJwtSecret({
+      cache: true,
+      rateLimit: true,
+      jwksRequestsPerMinute: 5,
+      jwksUri: process.env.AUTH0_ISSUER_BASE_URL,
+    }),
+    audience: AUTH0_CLIENT_ID,
+    issuer: process.env.AUTH0_ISSUER_BASE_URL,
+    algorithms: ['RS256'],
+  })
 
-    if (token) {
-        try {
-            const decode = jwt.verify(token, 'secret');
-
-            req.userId = decode._id;
-
-            next();
-
-        } catch (err) {
-            return res.status(403).json({
-                message: "No access"
-            });
-        };
-
-    } else {
-        return res.status(403).json({
-            message: "No access"
-        });
-    };
+  return checkJwt(req, res, (err) => {
+    if (err) {
+      return res.status(401).send(err.message);
+    }
+    return next();
+  });
 };
