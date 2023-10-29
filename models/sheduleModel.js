@@ -3,19 +3,28 @@ import mongoose from "mongoose";
 const scheduleSchema = new mongoose.Schema({
   scheduleName: {
     type: String,
-    required: true,
+    default: 'New Schedule'
   },
   events: [
     {
-      eventName: String,
-      eventTime: String,
-      eventColor: String,
+      eventName: {
+        type: String,
+      },
+      eventTime: {
+        type: String,
+      },
+      eventColor: {
+        type: String,
+      },
     }
   ],
+  isPublic: {
+    type: Boolean,
+    default: false,
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
   }
 });
 

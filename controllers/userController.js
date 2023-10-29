@@ -1,111 +1,68 @@
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
-
 import userModel from "../models/userModel.js";
+import admin from "firebase-admin";
 
-// user register
-export const register = async (req, res) => {
-    try {
-        const password = req.body.password;
-        const salt = await bcrypt.genSalt(10);
-        const hash = await bcrypt.hash(password, salt);
+// Get user info
+export const fetchUser = async (req, res) => {
+  try {
+    const userId = req.params.userId; // User Id
 
-        const doc = new userModel({
-            email: req.body.email,
-            passwordHash: hash,
+    // Get the user's information from the database
+    await userModel.findOne(
+      { 
+        _id: userId 
+      }
+    ).populate('User').then((User) => {
+      if (!User) { // If user is not found we return error 404
+        return res.status(404).json({
+          message: "User id not found!" // message
         });
+      }
 
-        const user = await doc.save();
+      res.json(User); // return user data in json format
+    })
 
-        const token = jwt.sign(
-            {
-                _id: user._id
-            },
-            'secret',
-            {
-                expiresIn: '50d'
-            },
-        );
-
-        const { passwordHash, ...userData } = user._doc;
-
-        res.json({
-            ...userData,
-            token
-        });
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            message: 'FAILED TO REGISTER!'
-        });
-    }
+  } catch (error) {
+    console.log(error) // Return error
+    res.status(500).json({
+      message: "Failed to upload image!"
+    });
+  }
 };
 
-// user login
-export const login = async (req, res) => {
-    try {
-        const user = await userModel.findOne({email: req.body.email});
+// Upload user image
+export const uplaodImage = async (req, res) => {
+  if (!req.file) { // Checking if the file is loaded
+    return res.status(400).json({ // If the file was not downloaded then we return a 400 error and return a message
+      message: "No file uploaded"
+    });
+  }
 
-        if (!user) {
-            res.status(404).json({
-                message: "User is not found!"
-            });
-        }
+  const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT); // Parsing JSON from the FIREBASE_SERVICE_ACCOUNT environment variable
+  admin.initializeApp({ // Initialize Firebase Admin using serviceAccount and specifying storageBucket from the environment variable
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET
+  });
 
-        const correctPass = await bcrypt.compare(req.body.password, user._doc.passwordHash);
+  try {
+    // Upload file to Firebase Storage
+    const bucket = admin.storage().bucket(); // Get a link to the Firebase Storage bucket
+    const fileRef = bucket.file(req.file.originalname); // Create a link to a file with the name specified in req.file.originalname
+    await fileRef.save(req.file.buffer); // Save the file buffer to Firebase Storage
 
-        if (!correctPass) {
-            res.status(400).json({
-                message: "Wrong data!"
-            });
-        }
+    // Get URL for the uploaded file
+    const [url] = await fileRef.getSignedUrl({
+      action: 'read',
+      expires: '01-01-2094'
+    });
 
-        const token = jwt.sign(
-            {
-                _id: user._id
-            },
-            'secret',
-            {
-                expiresIn: '50d'
-            },
-        );
-
-        const { passwordHash, ...userData } = user._doc;
-
-        res.json({
-            ...userData,
-            token,
-        });
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            message: "Failed to login!"
-        });
-    }
-};
-
-export const getMe = async (req, res) => {
-    try {
-        const user = await userModel.findById(req.userId);
-
-        if (!user) {
-            return res.status(404).json({
-                message: "User is not found"
-            });
-        };
-
-        const { passwordHash, ...userData } = user._doc;
-
-        res.json({
-            ...userData
-        });
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            message: "No access"
-        });
-    }
-};
+    // Return the URL as the response
+    res.json({
+      imageUrl: url
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ // In case of error, return 500 status
+      message: "Failed to upload image!"
+    });
+  }
+}
