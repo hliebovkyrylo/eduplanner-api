@@ -2,13 +2,15 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
   id: {
-    type: String
+    type: String,
+    unique: true,
   },
   name: {
     type: String
   },
   username: {
-    type: String
+    type: String,
+    unique: true,
   },
   image: {
     type: String

@@ -1,8 +1,11 @@
 import { body } from "express-validator";
 
-export const authValidator = [
-    body('email', 'Failed').isString(),
-    body('password', 'Failed').isString(),
+export const userValidator = [
+    body('id', 'Error').isString(),
+    body('name', 'Error').isString(),
+    body('username', 'Error').isString(),
+    body('image', 'Error').isString().optional(),
+    body('onboarded', 'Error').isBoolean(),
 ];
 
 export const createScheduleValidator = [

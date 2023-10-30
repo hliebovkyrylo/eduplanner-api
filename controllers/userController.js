@@ -66,3 +66,51 @@ export const uplaodImage = async (req, res) => {
     });
   }
 }
+
+// Creating user
+export const createUser = async (req, res) => {
+  try {
+    const doc = new userModel({ // User entered data
+      id: req.body.id,
+      name: req.body.name,
+      username: req.body.username,
+      image: req.body.image,
+      onboarded: req.body.onboarded,
+    });
+
+    const user = await doc.save(); // Saving user
+
+    res.json(user); // Displaying user information
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ // If the file was not downloaded then we return a 500 error and return a message
+      message: 'Failed to create user!'
+    })
+  }
+};
+
+// Is onboarded
+export const isOnboarded = async (req, res) => {
+  const id = req.body.id; // Id of the user authorized using Auth0
+
+  try {
+    const user = await userModel.findOne({ id }); // search for a user whose ID matches the auth0UserId
+
+    if (user) {
+      res.json({ // if the user is found, we will display the true
+        userFound: true
+      });
+    } else {
+      res.json({ // if the user is not found, we will display the false
+        userFound: false
+      });
+    }
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ // If the file was not downloaded then we return a 500 error and return a message
+      message: "Failed to find user!"
+    })
+  }
+}
