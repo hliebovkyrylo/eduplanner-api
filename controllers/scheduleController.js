@@ -1,22 +1,39 @@
 import scheduleModel from "../models/sheduleModel.js";
+import userModel from "../models/userModel.js";
 
-// creating schedule
+// Creating schedule
 export const createSchedule = async (req, res) => {
   try {
     const dafaultName = 'New Schedule'
-    const doc = new scheduleModel({ // when creating a new schedule, the default name will be 'New Schedule'
+    const doc = new scheduleModel({ // When creating a new schedule, the default name will be 'New Schedule'
       groupName: dafaultName,
     });
 
-    const schedule = await doc.save(); // save created schedule
+    const schedule = await doc.save(); // Save created schedule
 
-    res.json(schedule); // output of the schedule in json format
+    res.json(schedule); // Output of the schedule in json format
 
   } catch (error) {
-    console.log(error); // if error we return error to console and return status 500
+    console.log(error); // If error we return error to console and return status 500
     res.status(500).json({
       message: "Failed to create schedule"
     })
+  }
+};
+
+// Get user schedules
+export const fetchUserSchedules = async (req, res) => {
+  try {
+    const userId = await userModel.findById(req.userId); // Get the user id of the schedule you want to find
+    const schedules = await scheduleModel.find({ user: userId }); // Get the user's schedule by his id
+
+    res.json(schedules); // Display the found schedules
+
+  } catch (error) {
+    console.log(error); // if an error occurs when receiving schedules, we return a 500 error and display a message
+    res.status(500).json({
+      message: "Failed to get schedules!"
+    });
   }
 };
 

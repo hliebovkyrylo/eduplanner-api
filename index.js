@@ -28,7 +28,7 @@ app.patch('/schedule/update/:id', checkOwner, createScheduleValidator, validatio
 app.delete('/schedule/delete/:id', checkOwner, scheduleController.deleteSchedule);
 
 // receiving schedules
-app.get('/schedules/all', scheduleController.getAllSchedules);
+app.get('/schedules/getAllUserSchedules', scheduleController.fetchUserSchedules);
 app.get('/schedules/:id', scheduleController.getOneSchedule);
 
 // uplaod image to firebase
