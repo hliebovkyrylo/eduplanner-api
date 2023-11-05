@@ -9,16 +9,16 @@ export const fetchUser = async (req, res) => {
     // Get the user's information from the database
     await userModel.findOne(
       { 
-        _id: userId 
+        userId: userId 
       }
-    ).populate('User').then((User) => {
+    ).then((User) => { 
       if (!User) { // If user is not found we return error 404
         return res.status(404).json({
-          message: "User id not found!" // message
+          message: "User is not found!" // Return this message if user is not found
         });
       }
 
-      res.json(User); // return user data in json format
+      res.json(User); // Return user data in json format
     })
 
   } catch (error) {
@@ -71,7 +71,7 @@ export const uplaodImage = async (req, res) => {
 export const createUser = async (req, res) => {
   try {
     const doc = new userModel({ // User entered data
-      id: req.body.id,
+      userId: req.body.userId,
       name: req.body.name,
       username: req.body.username,
       image: req.body.image,

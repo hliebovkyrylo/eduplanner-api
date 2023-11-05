@@ -18,18 +18,19 @@ dotenv.config();
 mongoose.connect(process.env.MONGODB_URI).then(() => { console.log('DB connected'); }).catch((error) => { console.log('DB error!', error); });
 
 // Routes for the user
-app.get('/auth/me/:id', userController.fetchUser); // Get user info
+app.get('/user/me/:userId', userController.fetchUser); // Get user info
 app.post('/user/create', userValidator, validationErrors, userController.createUser); // Create user information
 app.post('/user/isOnboarded', userController.isOnboarded); // Checking whether the user is onboarded
 
 // create, update and delete schedules
 app.post('/schedule/create', scheduleController.createSchedule); // Create schedule
+app.patch('/schedule/:id/changePublicStatus', scheduleController.updatePublicStatus);
 app.patch('/schedule/update/:id', checkOwner, createScheduleValidator, validationErrors, scheduleController.updateSchedule);
-app.delete('/schedule/delete/:id', checkOwner, scheduleController.deleteSchedule);
+app.delete('/schedule/delete/:id', scheduleController.deleteSchedule);
 
 // receiving schedules
-app.get('/schedules/getAllUserSchedules', scheduleController.fetchUserSchedules);
-app.get('/schedules/:id', scheduleController.getOneSchedule);
+app.get('/schedules/getAllUserSchedules/:userId', scheduleController.fetchUserSchedules);
+app.get('/schedule/:id', scheduleController.fetchSchedule);
 
 // uplaod image to firebase
 const storage = multer.memoryStorage();

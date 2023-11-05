@@ -1,7 +1,7 @@
 import { body } from "express-validator";
 
 export const userValidator = [
-    body('id', 'Error').isString(),
+    body('userId', 'Error').isString(),
     body('name', 'Error').isString(),
     body('username', 'Error').isString(),
     body('image', 'Error').isString().optional(),
@@ -11,4 +11,5 @@ export const userValidator = [
 export const createScheduleValidator = [
     body('groupName', 'Failed').isString(),
     body('schedule', 'Failed').isObject(),
+    body('author', 'Failed').isString(),
 ];
