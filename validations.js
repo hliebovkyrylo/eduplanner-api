@@ -5,11 +5,19 @@ export const userValidator = [
     body('name', 'Error').isString(),
     body('username', 'Error').isString(),
     body('image', 'Error').isString().optional(),
-    body('onboarded', 'Error').isBoolean(),
 ];
 
 export const createScheduleValidator = [
     body('groupName', 'Failed').isString(),
-    body('schedule', 'Failed').isObject(),
     body('author', 'Failed').isString(),
+    body('authorUsername', 'Failed').isString(),
+];
+
+export const createEventValidator = [
+    body('eventName', 'Failed').isString(),
+    body('eventTime', 'Failed').isString(),
+    body('eventColor', 'Failed').isString(),
+    body('rowNum', 'Failed').isNumeric(),
+    body('colNum', 'Failed').isNumeric(),
+    body('parentId', 'Failed').isString(),
 ];

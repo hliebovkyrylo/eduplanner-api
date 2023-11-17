@@ -7,6 +7,7 @@ export const createSchedule = async (req, res) => {
     const doc = new scheduleModel({ // When creating a new schedule, the default name will be 'New Schedule'
       groupName: req.body.defaultName,
       author: req.body.author,
+      authorUsername: req.body.authorUsername,
     });
 
     const schedule = await doc.save(); // Save created schedule
@@ -25,7 +26,7 @@ export const createSchedule = async (req, res) => {
 export const fetchUserSchedules = async (req, res) => {
   try {
     const userId = await userModel.findById(req.params.userId); // Get the user id of the schedule you want to find
-    const schedules = await scheduleModel.find({ author: userId }) // Get the user's schedule by his id
+    const schedules = await scheduleModel.find({ author: userId }).sort({ updatedAt: -1 }); // Get the user's schedule by his id
 
     res.json(schedules); // Display the found schedules
 
@@ -53,8 +54,8 @@ export const updatePublicStatus = async (req, res) => {
 
     await updateSchedule.save(); // Save the updated schedule
 
-    res.json({ 
-      message: 'isPublic parameter updated' 
+    res.json({
+      message: 'isPublic parameter updated'
     });
 
   } catch (error) {
@@ -70,19 +71,35 @@ export const fetchSchedule = async (req, res) => {
   try {
     const scheduleId = req.params.id; // Getting schedule id
 
-    await scheduleModel.findOne( // Looking for a schedule based on a given id
+    const userId = req.query.userId;
+    const currentUser = await userModel.findById(userId).populate('allowedAccess');
+
+    const schedule = await scheduleModel.findOne( // Looking for a schedule based on a given id
       {
         _id: scheduleId
       }
-    ).then((schedule) => { // If the schedule for this id is not found, we return a 404 error
-      if (!schedule) {
-        res.status(404).json({
-          message: "Schedule is not found!"
-        });
-      }
+    );
 
-      res.json(schedule); // Schedule data output
-    })
+    // If the schedule for this id is not found, we return a 404 error
+    if (!schedule) {
+      res.status(404).json({
+        message: "Schedule is not found!"
+      });
+    }
+
+    if (currentUser && currentUser._id.toString() !== schedule.author.toString()) {
+      // Check for availability of schedule._id in allowedAccess
+      const isScheduleAlreadyAdded = currentUser.allowedAccess.some(item => item._id.toString() === schedule._id.toString());
+
+      // If schedule._id has not yet been added, then add
+      if (!isScheduleAlreadyAdded) {
+        currentUser.allowedAccess.push(schedule._id);
+
+        await currentUser.save();
+      }
+    }
+
+    res.json(schedule); // Schedule data output
 
   } catch (error) { // If it was not possible to get schedule, we return a 500 error and display a message
     console.log(error);
@@ -92,22 +109,22 @@ export const fetchSchedule = async (req, res) => {
   }
 };
 
+// Update schedule data
 export const updateSchedule = async (req, res) => {
   try {
-    const scheduleId = req.params.id;
+    const scheduleId = req.params.id; // Get the schedule ID that needs to be updated
 
     await scheduleModel.updateOne(
       {
-        _id: scheduleId,
+        _id: scheduleId, // Looking for a schedule by ID
       },
       {
-        groupName: req.body.groupName,
-        schedule: req.body.schedule
+        scheduleName: req.body.scheduleName
       },
     );
 
     res.json({
-      message: "Schedule updated!"
+      message: "Schedule updated!" // If everything went well, displays a message
     })
 
   } catch (error) {
@@ -159,4 +176,3 @@ export const getAllSchedules = async (req, res) => {
     })
   }
 };
-

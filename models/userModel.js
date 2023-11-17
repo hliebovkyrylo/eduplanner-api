@@ -14,10 +14,12 @@ const userSchema = new mongoose.Schema({
   image: {
     type: String
   },
-  onboarded: {
-    type: Boolean,
-    default: false,
-  },
+  allowedAccess: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Schedule',
+    },
+  ]
 });
 
 export default mongoose.model('User', userSchema);

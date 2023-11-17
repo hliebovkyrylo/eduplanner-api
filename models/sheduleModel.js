@@ -5,19 +5,6 @@ const scheduleSchema = new mongoose.Schema({
     type: String,
     default: 'New Schedule'
   },
-  events: [
-    {
-      eventName: {
-        type: String,
-      },
-      eventTime: {
-        type: String,
-      },
-      eventColor: {
-        type: String,
-      },
-    }
-  ],
   isPublic: {
     type: Boolean,
     default: false,
@@ -27,6 +14,10 @@ const scheduleSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  authorUsername: {
+    type: String,
+    required: true,
+  }
 }, {
   timestamps: true
 });

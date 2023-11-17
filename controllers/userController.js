@@ -4,27 +4,22 @@ import admin from "firebase-admin";
 // Get user info
 export const fetchUser = async (req, res) => {
   try {
-    const userId = req.params.userId; // User Id
+    const userId = req.params.userId;
 
-    // Get the user's information from the database
-    await userModel.findOne(
-      { 
-        userId: userId 
-      }
-    ).then((User) => { 
-      if (!User) { // If user is not found we return error 404
-        return res.status(404).json({
-          message: "User is not found!" // Return this message if user is not found
-        });
-      }
+    const user = await userModel.findOne({ userId }).populate('allowedAccess');
 
-      res.json(User); // Return user data in json format
-    })
+    if (!user) {
+      return res.status(404).json({
+        message: "User is not found!"
+      });
+    }
+
+    res.json(user);
 
   } catch (error) {
-    console.log(error) // Return error
+    console.log(error);
     res.status(500).json({
-      message: "Failed to upload image!"
+      message: "Failed to fetch user!"
     });
   }
 };
@@ -75,7 +70,6 @@ export const createUser = async (req, res) => {
       name: req.body.name,
       username: req.body.username,
       image: req.body.image,
-      onboarded: req.body.onboarded,
     });
 
     const user = await doc.save(); // Saving user
@@ -92,10 +86,10 @@ export const createUser = async (req, res) => {
 
 // Is onboarded
 export const isOnboarded = async (req, res) => {
-  const id = req.body.id; // Id of the user authorized using Auth0
+  const userId = req.params.userId; // Id of the user authorized using Auth0
 
   try {
-    const user = await userModel.findOne({ id }); // search for a user whose ID matches the auth0UserId
+    const user = await userModel.findOne({ userId: userId }); // search for a user whose ID matches the auth0UserId
 
     if (user) {
       res.json({ // if the user is found, we will display the true
