@@ -7,7 +7,7 @@ export default async (req, res, next) => {
 
     const schedule = await scheduleModel.findById(scheduleId);
 
-    if (schedule && schedule.isPublic === true || schedule && schedule.author.toString() === currentUserId) {
+    if ((schedule && schedule.isPublic === true) || (schedule && schedule.author.toString() === currentUserId.toString())) {
       next();
     } else {
       res.status(403).send('Your access is denied!');

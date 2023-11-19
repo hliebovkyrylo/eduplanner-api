@@ -1,15 +1,36 @@
 import scheduleModel from "../models/sheduleModel.js";
+import eventModel from "../models/eventModel.js";
 
 export default async (req, res, next) => {
   try {
-    const scheduleId = req.params.id;
-    const currentUser = req.userId;
-    const schelude = await scheduleModel.findById(scheduleId);
+    const eventId = req.params.id;
+    const currentUser = req.query.userId;
 
-    if (schelude && schelude.user === currentUser) {
-      next()
+    if (!eventId) {
+      const parentId = req.query.parentId; 
+      const schedule = await scheduleModel.findById(parentId);
+      const scheduleId = schedule.author.toString();
+
+      if (currentUser === scheduleId) {
+        next();
+      } else {
+        res.status(403).send('Access denied!');
+      }
+
     } else {
-      res.status(401).send('Your access is denied');
+      const event = await eventModel.findById(eventId);
+
+      if (event) {
+        const schedule = await scheduleModel.findById(event.parentId);
+        const scheduleId = schedule.author.toString();
+        const currentUserString = currentUser.toString();
+
+        if (currentUserString === scheduleId) {
+          next();
+        } else {
+          res.status(403).send('Access denied!');
+        }
+      }
     }
 
   } catch (error) {

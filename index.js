@@ -33,10 +33,10 @@ app.get('/schedules/getAllUserSchedules/:userId', scheduleController.fetchUserSc
 app.get('/schedule/:id', isPublicSchedule, scheduleController.fetchSchedule);
 
 // actions with events
-app.post('/event/create', createEventValidator, validationErrors, eventController.createEvent);
-app.get('/event/getAll/:scheduleId', eventController.fetchAllEvents);
+app.post('/event/create', checkOwner, createEventValidator, validationErrors, eventController.createEvent);
+app.get('/event/getAll/:id', isPublicSchedule, eventController.fetchAllEvents);
 app.get('/event/:id', eventController.fetchEvent);
-app.patch('/event/:id/update', eventController.updateEvent);
+app.patch('/event/:id/update', checkOwner, eventController.updateEvent);
 
 // uplaod image to firebase
 const storage = multer.memoryStorage();

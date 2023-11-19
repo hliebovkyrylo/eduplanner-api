@@ -27,7 +27,7 @@ export const createEvent = async (req, res) => {
 // Getting all events belonging to one schedule 
 export const fetchAllEvents = async (req, res) => {
   try {
-    const scheduleId = req.params.scheduleId;
+    const scheduleId = req.params.id;
 
     const events = await eventModel.find({ parentId: scheduleId }).populate('parentId')
 
