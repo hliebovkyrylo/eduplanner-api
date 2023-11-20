@@ -21,6 +21,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => { console.log('DB connected
 app.get('/user/me/:userId', userController.fetchUser); // Get user info
 app.post('/user/create', userValidator, validationErrors, userController.createUser); // Create user information
 app.post('/user/isOnboarded/:userId', userController.isOnboarded); // Checking whether the user is onboarded
+app.patch('/user/:userId/remove/:scheduleId', userController.removeSchedule);
 
 // create, update and delete schedules
 app.post('/schedule/create', scheduleController.createSchedule); // Create schedule

@@ -108,3 +108,30 @@ export const isOnboarded = async (req, res) => {
     })
   }
 }
+
+// Remove allowed schedule
+export const removeSchedule = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const scheduleId = req.params.scheduleId;
+
+    const user = await userModel.findOneAndUpdate(
+      { _id: userId },
+      { $pull: { allowedAccess: scheduleId } },
+      { new: true }
+    );
+
+    // Check if the user was found
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(user); // Return the updated user in JSON format
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Failed to remove schedule!"
+    })
+  }
+}
