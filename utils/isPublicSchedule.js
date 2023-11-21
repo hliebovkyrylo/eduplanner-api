@@ -12,6 +12,7 @@ export default async (req, res, next) => {
     } else {
       res.status(403).send('Your access is denied!');
     }
+    
   } catch (error) {
     console.log(error);
     res.status(500).json({

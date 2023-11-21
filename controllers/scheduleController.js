@@ -1,5 +1,6 @@
 import scheduleModel from "../models/sheduleModel.js";
 import userModel from "../models/userModel.js";
+import mongoose from "mongoose";
 
 // Creating schedule
 export const createSchedule = async (req, res) => {
@@ -72,39 +73,41 @@ export const fetchSchedule = async (req, res) => {
     const scheduleId = req.params.id; // Getting schedule id
 
     const userId = req.query.userId;
-    const currentUser = await userModel.findById(userId).populate('allowedAccess');
 
-    const schedule = await scheduleModel.findOne( // Looking for a schedule based on a given id
-      {
-        _id: scheduleId
-      }
-    );
+    // Check if userId is a valid ObjectId before querying the database
+    let currentUser;
+    if (userId && mongoose.Types.ObjectId.isValid(userId)) {
+      currentUser = await userModel.findById(userId).populate('allowedAccess');
+    }
 
-    // If the schedule for this id is not found, we return a 404 error
+    const schedule = await scheduleModel.findOne({
+      _id: scheduleId
+    });
+
+    // If the schedule for this id is not found, return a 404 error
     if (!schedule) {
-      res.status(404).json({
-        message: "Schedule is not found!"
+      return res.status(404).json({
+        message: "Schedule not found!"
       });
     }
 
+    // If there is a current user and he is not the author of the schedule
     if (currentUser && currentUser._id.toString() !== schedule.author.toString()) {
-      // Check for availability of schedule._id in allowedAccess
       const isScheduleAlreadyAdded = currentUser.allowedAccess.some(item => item._id.toString() === schedule._id.toString());
 
-      // If schedule._id has not yet been added, then add
+      // If the schedule has not yet been added, add
       if (!isScheduleAlreadyAdded) {
         currentUser.allowedAccess.push(schedule._id);
-
         await currentUser.save();
       }
     }
 
-    res.json(schedule); // Schedule data output
+    res.json(schedule); // Output data about the schedule
 
-  } catch (error) { // If it was not possible to get schedule, we return a 500 error and display a message
+  } catch (error) {
     console.log(error);
     res.status(500).json({
-      message: "Failed to get schedule!"
+      message: "Не удалось получить расписание!"
     });
   }
 };
@@ -160,19 +163,5 @@ export const deleteSchedule = async (req, res) => {
     res.status(500).json({
       message: "Failed to delete schedule!"
     });
-  }
-};
-
-export const getAllSchedules = async (req, res) => {
-  try {
-    const schedules = await scheduleModel.find().exec();
-
-    res.json(schedules)
-
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: "Failed to get schedules!"
-    })
   }
 };
