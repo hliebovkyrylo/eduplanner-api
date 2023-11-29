@@ -7,7 +7,8 @@
     "node": "18.x"
   },
   "scripts": {
-    "build": "tsc && npx prisma generate",
+    "postinstall": "prisma generate",
+    "build": "prisma generate && tsc",
     "start": "node ./dist/index.js",
     "dev": "nodemon --files ./src/index.ts"
   },
