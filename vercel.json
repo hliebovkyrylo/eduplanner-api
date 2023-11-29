@@ -1,24 +1,15 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "installCommand": "npm install",
-  "rewrites": [],
-  "runtime": "nodejs14",
-  "typescript": {
-    "compilerOptions": {
-      "module": "commonjs",
-      "target": "es2015",
-      "outDir": "dist",
-      "strict": true,
-      "esModuleInterop": true,
-      "skipLibCheck": true,
-      "forceConsistentCasingInFileNames": true
-    },
-    "include": [
-      "./src/**/*.ts"
-    ],
-    "exclude": [
-      "node_modules/**/*.ts"
-    ]
-  }
+  "version": 2,
+  "scripts": {
+    "build": "tsc"
+  },
+  "builds": [
+    { "src": "src/index.ts", "use": "@vercel/node" }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "src/index.ts"
+    }
+  ]
 }
