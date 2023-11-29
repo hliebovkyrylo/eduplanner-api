@@ -1,8 +1,5 @@
 {
   "version": 2,
-  "scripts": {
-    "build": "tsc"
-  },
   "builds": [
     { "src": "src/index.ts", "use": "@vercel/node" }
   ],
