@@ -1,4 +1,8 @@
-import { Request, Response, NextFunction } from "express";
+import { 
+  Request, 
+  Response, 
+  NextFunction 
+}                 from "express";
 import { prisma } from "..";
 
 export default async (
@@ -8,7 +12,7 @@ export default async (
 ) => {
   try {
     const scheduleId    = request.params.scheduleId;
-    const currentUserId = request.query.userId;
+    const currentUserId = request.user?.id;
     const eventId       = request.params.eventId;
 
     let schedule;

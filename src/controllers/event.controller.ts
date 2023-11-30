@@ -1,6 +1,9 @@
-import { Request, Response }  from "express";
-import { ICreateEventSchema, IUpdateEventSchema } from "../schemas/schedule.schema";
-import { eventService }       from "../services/event.service";
+import { Request, Response } from "express";
+import { 
+  ICreateEventSchema, 
+  IUpdateEventSchema 
+}                            from "../schemas/schedule.schema";
+import { eventService }      from "../services/event.service";
 
 class EventController {
   // Creating event

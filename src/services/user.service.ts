@@ -6,9 +6,19 @@ class UserService {
     return await prisma.user.create({ data });
   };
 
-  public async findUserById(id: string) {
+  public async findUserByEmail(email: string) {
     return await prisma.user.findFirst({
-      where: { id }
+      where: {
+        email: email,
+      },
+    });
+  };
+
+  public async findUserByUsername(username: string) {
+    return await prisma.user.findFirst({
+      where: {
+        username: username,
+      },
     });
   };
 };

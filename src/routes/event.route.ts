@@ -6,10 +6,11 @@ import {
   createEventSchema, 
   updateEventSchema 
 }                               from "../schemas/schedule.schema";
+import { isAuth }               from "../middleware/isAuth";
 
 export const eventRouter = Router();
 
-eventRouter.post('/create/for/:scheduleId', checkOwner, validate(createEventSchema), eventController.createEvent);
-eventRouter.get('/getAll/:scheduleId', isPublic, eventController.getEvents);
-eventRouter.get('/:scheduleId', isPublic, eventController.getEvents);
-eventRouter.patch('/:eventId', checkOwner, validate(updateEventSchema), eventController.updateEvent);
+eventRouter.post('/create/for/:scheduleId', isAuth, checkOwner, validate(createEventSchema), eventController.createEvent);
+eventRouter.get('/getAll/:scheduleId', isAuth, isPublic, eventController.getEvents);
+eventRouter.get('/:scheduleId', isAuth, isPublic, eventController.getEvents);
+eventRouter.patch('/:eventId', isAuth, checkOwner, validate(updateEventSchema), eventController.updateEvent);

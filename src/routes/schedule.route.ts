@@ -6,11 +6,12 @@ import {
   createScheduleSchema, 
   updateScheduleSchema 
 }                               from "../schemas/schedule.schema";
+import { isAuth }               from "../middleware/isAuth";
 
 export const scheduleRoute = Router();
 
-scheduleRoute.post('/create', validate(createScheduleSchema), scheduleController.createSchedule);
-scheduleRoute.patch('/update/:scheduleId', checkOwner, validate(updateScheduleSchema), scheduleController.updateSchedule);
-scheduleRoute.delete('/delete/:scheduleId', checkOwner, scheduleController.deleteSchedule);
-scheduleRoute.get('/by/:userId', scheduleController.fetchSchedulesByAuthor);
-scheduleRoute.get('/:scheduleId', isPublic, scheduleController.fetchShedule);
+scheduleRoute.post('/create', isAuth, validate(createScheduleSchema), scheduleController.createSchedule);
+scheduleRoute.patch('/update/:scheduleId', isAuth, checkOwner, validate(updateScheduleSchema), scheduleController.updateSchedule);
+scheduleRoute.delete('/delete/:scheduleId', isAuth, checkOwner, scheduleController.deleteSchedule);
+scheduleRoute.get('/by/:userId', isAuth, scheduleController.fetchSchedulesByAuthor);
+scheduleRoute.get('/:scheduleId', isAuth, isPublic, scheduleController.fetchShedule);
