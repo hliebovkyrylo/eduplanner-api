@@ -14,7 +14,6 @@ EduPlanner is a web application where you can create, edit and share timetables 
 - Manage your schedules.
 - Use other users' schedules
 - Quick access to recently visited schedules.
-- Own authorization.
 
 ## Usage
 Used for the server side of the EduPlanner application.
