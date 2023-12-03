@@ -4,7 +4,6 @@ import {
   IcreateScheduleSchema 
 }                                from "../schemas/schedule.schema";
 import { scheduleService }       from "../services/schedule.service";
-import { userService }           from "../services/user.service";
 import { visitedService }        from "../services/visited.service";
 
 class ScheduleController {
@@ -18,8 +17,16 @@ class ScheduleController {
 
   // Method to fetch schedules by the author's userId
   public async fetchSchedulesByAuthor(request: Request, response: Response) {
-    const userId    = request.params.userId; // Extracting the userId from the request parameters
-    const schedules = await scheduleService.searchSchedulesByAuthor(userId); // Retrieving schedules by author using the schedule service
+    const userId = request.user?.id; 
+
+    if (!userId) {
+      response.status(401).send({
+        code: 'user-not-found',
+        message: 'User not found, please log in'
+      });
+    }
+
+    const schedules = userId && (await scheduleService.searchSchedulesByAuthor(userId)); // Retrieving schedules by author using the schedule service
 
     response.send(schedules);
   };
