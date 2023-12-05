@@ -10,7 +10,7 @@ export const signUpSchema = z.object({
   name         : z.string(),
   username     : z.string(),
   image        : z.string(),
-  password     : z.string()
+  password     : z.string().min(8),
 });
 
 export type ISignInSchema = z.infer<typeof signInSchema>;

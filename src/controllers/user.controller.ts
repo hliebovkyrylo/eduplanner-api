@@ -40,7 +40,7 @@ class UserController {
     const data = request.body as ISignInSchema;
     const user = await userService.findUserByEmail(data.email);
 
-    if (user !== null) {
+    if (user === null) {
       response.status(404).send({
         code: "user-not-found",
         message: "User not found"
