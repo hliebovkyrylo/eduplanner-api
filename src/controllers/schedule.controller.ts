@@ -52,9 +52,9 @@ class ScheduleController {
       });
     }
 
-    const userId = request.query.userId?.toString(); // Extracting user ID from the query parameters
+    const userId = request.user?.id.toString(); // Extracting user ID from the query parameters
 
-    if (userId && schedule && userId.toString() !== schedule.authorId.toString()) { // Checking if the schedule belongs to a different author than the requesting user
+    if (userId && schedule && userId !== schedule.authorId.toString()) { // Checking if the schedule belongs to a different author than the requesting user
       const isScheduleAlreadyAdded = await visitedService.findVisited(userId, scheduleId); // Checking if the schedule has already been visited by the user
       
       if (!isScheduleAlreadyAdded) { // If not visited, adding the schedule to the user's visited list

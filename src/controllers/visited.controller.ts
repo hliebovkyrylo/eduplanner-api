@@ -4,7 +4,14 @@ import { visitedService }    from "../services/visited.service";
 class VisitedController {
   // Method to get schedules that a user has visited
   public async getVisitedSchedules(request: Request, response: Response) {
-    const userId          = request.params.userId; // Extracting userId from the request parameters
+    const user = request.user;
+    if (user === undefined) {
+      return response.status(401).send({
+        code: "unauthorized",
+        message: "You are not authorized"
+      });
+    }
+    const userId          = user.id.toString(); 
     const visitedSchedule = await visitedService.findVisitedSchedules(userId); // Finding visited schedules for the user using the visited service
 
     response.send(visitedSchedule); // Sending the visited schedules as the response

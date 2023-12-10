@@ -12,6 +12,7 @@ export default async (
 ) => {
   try {
     const scheduleId    = request.params.scheduleId;
+    const parentId      = request.body.parentId;
     const currentUserId = request.user?.id;
     const eventId       = request.params.eventId;
 
@@ -36,6 +37,12 @@ export default async (
           id: event?.parentId,
         },
       });
+    } else if (parentId) {
+      schedule = await prisma.schedule.findFirst({
+        where: {
+          id: parentId
+        },
+      }) ;
     }
 
     if (schedule?.authorId.toString() === currentUserId?.toString()) {
