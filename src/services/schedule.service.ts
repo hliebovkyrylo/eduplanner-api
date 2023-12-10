@@ -14,6 +14,16 @@ class ScheduleService {
     });
   };
 
+  public async findSchdeulesByIds(schdeuleIds: any) {
+    return await prisma.schedule.findMany({
+      where: {
+        id: {
+          in: schdeuleIds
+        }
+      }
+    })
+  }
+
   public async updateSchedule(scheduleId: string, newData: Prisma.ScheduleUpdateInput) {
     return await prisma.schedule.update({
       where: {

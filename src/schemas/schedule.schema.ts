@@ -16,7 +16,7 @@ export const updateScheduleSchema = z.object({
 });
 
 export const createEventSchema = z.object({
-  eventName : z.string(),
+  eventName : z.string().max(76),
   eventTime : z.string(),
   eventColor: z.string(),
   rowNum    : z.number(),
@@ -25,7 +25,7 @@ export const createEventSchema = z.object({
 });
 
 export const updateEventSchema = z.object({
-  eventName : z.string(),
+  eventName : z.string().max(76),
   eventTime : z.string(),
   eventColor: z.string(),
 });

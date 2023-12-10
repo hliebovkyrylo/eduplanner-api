@@ -5,4 +5,4 @@ import { isAuth }            from "../middleware/isAuth";
 export const visitedRouter = Router();
 
 visitedRouter.get('/getAll', isAuth, visitedController.getVisitedSchedules);
-visitedRouter.delete('/:visitedId', isAuth, visitedController.removeVisitedSchedule);
+visitedRouter.delete('/:scheduleId', isAuth, visitedController.removeVisitedSchedule);
