@@ -42,6 +42,30 @@ class ScheduleService {
   };
 
   public async deleteSchedule(scheduleId: string) {
+    const events = await prisma.event.findMany({
+      where: {
+        parentId: scheduleId,
+      },
+    });
+
+    if (events !== null) {
+      const eventIds = events.map(event => event.id);
+
+      await prisma.extraField.deleteMany({
+        where: {
+          eventId: {
+            in: eventIds,
+          },
+        },
+      });
+
+      await prisma.event.deleteMany({
+        where: {
+          parentId: scheduleId,
+        },
+      });
+    }
+
     return await prisma.schedule.delete({
       where: {
         id: scheduleId,
