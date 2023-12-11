@@ -19,10 +19,7 @@ EduPlanner is a web application where you can create, edit and share timetables 
 Used for the server side of the EduPlanner application.
 
 ## Will be in the future
-- Selecting the number of days in the schedule.
 - Adding or removing event numbering.
-- Сustom fields in event settings.
-- Change in the number of events per day.
 
 ## Technologies used
 - *MongoDB* - Database for storing user data and schedules.
