@@ -8,7 +8,8 @@ import { PrismaClient }  from "@prisma/client";
 import { 
   userRoute, 
   scheduleRoute,
-  eventRouter
+  eventRouter,
+  extraFieldRouter
 }                        from "./routes/index";
 import { serverError }   from "./middleware/index";
 import { visitedRouter } from "./routes/visited.route";
@@ -26,6 +27,7 @@ app.use('/user', userRoute);
 app.use('/schedule', scheduleRoute);
 app.use('/event', eventRouter);
 app.use('/visited', visitedRouter);
+app.use('/extraField', extraFieldRouter);
 
 app.use(serverError)
 

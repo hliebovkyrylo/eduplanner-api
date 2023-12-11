@@ -3,6 +3,8 @@ import { z } from "zod";
 export const createScheduleSchema = z.object({
   scheduleName  : z.string(),
   isPublic      : z.boolean().default(false),
+  numOfCol      : z.number().default(6),
+  numOfRow      : z.number().default(8),
   authorId      : z.string(),
   authorUsername: z.string(),
   createdAt     : z.date().default(() => new Date()),
@@ -10,8 +12,10 @@ export const createScheduleSchema = z.object({
 });
 
 export const updateScheduleSchema = z.object({
-  scheduleName: z.string(),
-  isPublic    : z.boolean(),
+  scheduleName: z.string().optional(),
+  isPublic    : z.boolean().optional(),
+  numOfCol    : z.number().optional(),
+  numOfRow    : z.number().optional(),
   updatedAt   : z.date().default(() => new Date()),
 });
 
@@ -30,7 +34,20 @@ export const updateEventSchema = z.object({
   eventColor: z.string(),
 });
 
+export const createExtraField = z.object({
+  extraName : z.string(),
+  extraValue: z.string(),
+  eventId   : z.string(),
+});
+
+export const updateExtraField = z.object({
+  extraName : z.string(),
+  extraValue: z.string(),
+});
+
 export type IcreateScheduleSchema = z.infer<typeof createScheduleSchema>;
 export type IUpdateScheduleSchema = z.infer<typeof updateScheduleSchema>;
 export type ICreateEventSchema    = z.infer<typeof createEventSchema>;
 export type IUpdateEventSchema    = z.infer<typeof updateEventSchema>;
+export type ICreateExtraField     = z.infer<typeof createExtraField>;
+export type IUpdateExtraField     = z.infer<typeof updateExtraField>
