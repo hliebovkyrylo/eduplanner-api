@@ -22,6 +22,14 @@ class ExtraFieldService {
       },
     });
   };
+
+  public async deleteExtraField(extraFieldId: string) {
+    return await prisma.extraField.delete({
+      where: {
+        id: extraFieldId,
+      },
+    });
+  };
 };
 
 export const extraFieldService = new ExtraFieldService();

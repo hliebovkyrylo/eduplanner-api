@@ -24,6 +24,13 @@ class ExtraFieldController {
 
     response.send(extraFields);
   };
+
+  public deleteExtraField = async (request: Request, response: Response) => {
+    const extraFieldId = request.params.extraFieldId;
+    await extraFieldService.deleteExtraField(extraFieldId);
+
+    response.send('Extra field deleted!');
+  };
 };
 
 export const extraFieldController = new ExtraFieldController();
