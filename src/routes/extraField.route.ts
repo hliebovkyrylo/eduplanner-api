@@ -1,6 +1,6 @@
-import { Router } from "express";
-import { isAuth } from "../middleware/isAuth";
-import { checkOwner } from "../middleware";
+import { Router }               from "express";
+import { isAuth }               from "../middleware/isAuth";
+import { checkOwner }           from "../middleware";
 import { extraFieldController } from "../controllers/extraField.controller";
 
 export const extraFieldRouter = Router();
@@ -8,4 +8,4 @@ export const extraFieldRouter = Router();
 extraFieldRouter.post('/create', isAuth, checkOwner, extraFieldController.createExtraField);
 extraFieldRouter.patch('/update/:extraFieldId', isAuth, extraFieldController.updateExtraField);
 extraFieldRouter.get('/:eventId', isAuth, extraFieldController.getAllExtraFields);
-extraFieldRouter.delete('/:extraFieldId', isAuth, extraFieldController.getAllExtraFields);
+extraFieldRouter.delete('/delete/:extraFieldId', isAuth, extraFieldController.deleteExtraField);
