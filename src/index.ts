@@ -31,6 +31,10 @@ app.use('/extraField', extraFieldRouter);
 
 app.use(serverError)
 
-app.listen(port, () => {
-  console.log(`Server started at port ${port}!`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  server.listen(port, () => {
+    console.log(`Server started at port ${port}!`);
+  });
+}
+
+export default app;
