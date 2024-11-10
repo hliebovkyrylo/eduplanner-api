@@ -3,6 +3,7 @@ import {
   type Response,
   type NextFunction,
 } from "express";
+import { errorResponse } from "./apiResponse";
 
 export default async (
   error   : Error,
@@ -11,8 +12,5 @@ export default async (
   next    : NextFunction,
 ) => {
   console.log(error);
-  response.status(500).send({
-    code: 'internal',
-    error: 'Internal server error!'
-  });
+  response.status(500).json(errorResponse("Internal server error", 500));
 }

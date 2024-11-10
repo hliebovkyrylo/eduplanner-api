@@ -1,77 +1,90 @@
 import { Prisma, type Schedule } from "@prisma/client";
-import { prisma }                from "..";
+import { prisma } from "..";
+import { ApiError } from "../utils/apiError";
 
 class ScheduleService {
-  public async createSchedule(data: Omit<Schedule, 'id'>) {
-    return await prisma.schedule.create({ data });
-  };
-
-  public async searchSchedulesByAuthor(userId: string) {
-    return await prisma.schedule.findMany({
-      where: {
-        authorId: userId
-      },
-    });
-  };
-
-  public async findSchdeulesByIds(schdeuleIds: any) {
-    return await prisma.schedule.findMany({
-      where: {
-        id: {
-          in: schdeuleIds
-        }
-      }
-    })
+  public async createSchedule(data: Omit<Schedule, "id">) {
+    return prisma.schedule.create({ data });
   }
 
-  public async updateSchedule(scheduleId: string, newData: Prisma.ScheduleUpdateInput) {
-    return await prisma.schedule.update({
+  public async getSchedulesByAuthorId(userId: string) {
+    return prisma.schedule.findMany({
       where: {
-        id: scheduleId,
-      },
-      data: newData,
-    });
-  };
-
-  public async findScheduleById(scheduleId: string) {
-    return await prisma.schedule.findFirst({
-      where: {
-        id: scheduleId,
+        authorId: userId,
       },
     });
-  };
+  }
 
-  public async deleteSchedule(scheduleId: string) {
-    const events = await prisma.event.findMany({
-      where: {
-        parentId: scheduleId,
-      },
-    });
-
-    if (events !== null) {
-      const eventIds = events.map(event => event.id);
-
-      await prisma.extraField.deleteMany({
+  public async updateSchedule(
+    scheduleId: string,
+    data: Prisma.ScheduleUpdateInput
+  ) {
+    try {
+      return prisma.schedule.update({
         where: {
-          eventId: {
-            in: eventIds,
-          },
+          id: scheduleId,
         },
+        data: data,
       });
+    } catch (error: any) {
+      if (error.code === "P2022") {
+        throw new ApiError(
+          404,
+          "Schedule with such ID not found",
+          "schedule_not_found"
+        );
+      }
 
-      await prisma.event.deleteMany({
-        where: {
-          parentId: scheduleId,
-        },
-      });
+      throw error;
+    }
+  }
+
+  public async getScheduleById(scheduleId: string, userId?: string) {
+    const schedule = await prisma.schedule.findFirst({
+      where: { id: scheduleId },
+      include: { events: true },
+    });
+
+    if (!schedule) {
+      throw new ApiError(
+        404,
+        "Schedule with such ID not found",
+        "schedule_not_found"
+      );
     }
 
-    return await prisma.schedule.delete({
-      where: {
-        id: scheduleId,
-      },
-    });
-  };
-};
+    if (userId && userId !== schedule.authorId.toString()) {
+      const isVisited = await prisma.visited.findFirst({
+        where: { userId, scheduleId },
+      });
+
+      if (!isVisited) {
+        await prisma.visited.create({
+          data: { userId, scheduleId },
+        });
+      }
+    }
+
+    return schedule;
+  }
+
+  public async deleteSchedule(scheduleId: string) {
+    try {
+      return prisma.schedule.delete({
+        where: { id: scheduleId },
+      });
+    } catch (error: any) {
+      if (error.code === "P2022") {
+        throw new ApiError(
+          404,
+          "Schedule with such ID not found",
+          "schedule_not_found"
+        );
+      }
+
+      throw error;
+    }
+  }
+}
 
 export const scheduleService = new ScheduleService();

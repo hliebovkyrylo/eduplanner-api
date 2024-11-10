@@ -1,50 +1,58 @@
 import { Request, Response } from "express";
-import { 
-  ICreateEventSchema, 
-  IUpdateEventSchema 
-}                            from "../schemas/schedule.schema";
-import { eventService }      from "../services/event.service";
+import {
+  ICreateEventSchema,
+  IUpdateEventSchema,
+} from "../schemas/event.schema";
+import { eventService } from "../services/event.service";
+import { errorResponse, successResponse } from "../utils/apiResponse";
+import { ApiError } from "../utils/apiError";
 
 class EventController {
-  // Creating event
   public async createEvent(request: Request, response: Response) {
-    const data  = request.body as ICreateEventSchema; // Retrieving the request body and casting it to type ICreateEventSchema
-    const event = await eventService.createEvent({ ...data }); // Call the createEvent service method with data transfer and wait for the result
+    try {
+      const data = request.body as ICreateEventSchema;
+      const event = await eventService.createEvent({ ...data });
 
-    response.send(event); // Return the created event
-  };
-
-  // Receiving all events of the schedule
-  public async getEvents(request: Request, response: Response) {
-    const scheduleId = request.params.scheduleId; // Take the scheduleId from the request parameters
-    const events     = await eventService.searchEvents(scheduleId); // Looking for all events that belong to the schedule
-
-    response.send(events); // Return the received events
-  };
-
-  // Receiving one event
-  public async getEvent(request: Request, response: Response) {
-    const eventId = request.params.eventId; // Take the eventId from the request parameters
-    const event   = await eventService.findEventById(eventId); 
-
-    if (!event) { // If the event is not found we return a 404 error
-      response.status(404).send({
-        code   : "event-not-found",
-        message: "Event not found"
-      })
+      response.json(successResponse(event));
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return response
+          .status(error.statusCode)
+          .json(errorResponse(error.message, error.statusCode));
+      }
     }
+  }
 
-    response.send(event); // Return the received event
-  };
+  public async getEvent(request: Request, response: Response) {
+    try {
+      const eventId = request.params.eventId;
+      const event = await eventService.getEventById(eventId);
 
-  // Event update
+      response.json(successResponse(event));
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return response
+          .status(error.statusCode)
+          .json(errorResponse(error.message, error.statusCode));
+      }
+    }
+  }
+
   public async updateEvent(request: Request, response: Response) {
-    const eventId      = request.params.eventId; // Get the id of the event that needs to be updated
-    const newData      = request.body as IUpdateEventSchema; // Transmit new data
-    const updatedEvent = await eventService.updateEvent(eventId, newData); // update the event
+    try {
+      const eventId = request.params.eventId;
+      const data = request.body as IUpdateEventSchema;
+      const updatedEvent = await eventService.updateEvent(eventId, data);
 
-    response.send(updatedEvent);
-  };
-};
+      response.json(successResponse(updatedEvent));
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return response
+          .status(error.statusCode)
+          .json(errorResponse(error.message, error.statusCode));
+      }
+    }
+  }
+}
 
 export const eventController = new EventController();
