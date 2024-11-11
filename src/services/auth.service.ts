@@ -3,10 +3,10 @@ import { prisma } from "..";
 import { ApiError } from "../utils/apiError";
 
 class AuthService {
-  public async signUp(data: Omit<User, "id" | "username" | "imageUrl">) {
+  public async signUp(data: Omit<User, "id" | "username">) {
     try {
       const username = data.email.split("@")[0];
-      return prisma.user.create({
+      return await prisma.user.create({
         data: { ...data, username },
       });
     } catch (error: any) {
